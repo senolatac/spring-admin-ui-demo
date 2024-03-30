@@ -3,11 +3,14 @@ package com.example.demoadminui.config;
 
 import java.util.UUID;
 
+import de.codecentric.boot.admin.server.web.client.HttpHeadersProvider;
 import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -27,6 +30,7 @@ import de.codecentric.boot.admin.server.config.AdminServerProperties;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.POST;
 
+@Slf4j
 @Configuration(proxyBeanMethods = false)
 @RequiredArgsConstructor
 public class SecuritySecureConfig {
@@ -88,5 +92,15 @@ public class SecuritySecureConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public HttpHeadersProvider customHttpHeadersProvider() {
+        return instance -> {
+            log.debug("Instance: {}", instance.toString());
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.add("X-CUSTOM", "My Custom Value");
+            return httpHeaders;
+        };
     }
 }
